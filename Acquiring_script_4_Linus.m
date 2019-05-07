@@ -1,5 +1,5 @@
-% This script loads abf files and writes them to .mat files
 % general initializing procedure
+
 clear all
 
 % acquiring all data from all files in the data folder
@@ -29,11 +29,13 @@ clear FullPathName;
 % discarded
 
 i=1;
+List = squeeze(List);
 for F = 1:numel(List)
     if(~isempty(List{F}))
-        tempName = ['file_',List{F}.name(1:end-4)];
+        for i=1:size(List{F})
+        tempName = ['file_',List{F}(i).name(1:end-4)];
         tempName = replace(tempName," ","_");
-        Database_Files.(tempName) = List{F};
+        Database_Files.(tempName) = List{F}(i);
         disp(fullfile(Database_Files.(tempName).folder,Database_Files.(tempName).name))
         
         % read abf file, two cannels.
@@ -68,9 +70,10 @@ for F = 1:numel(List)
         close all;
         clearvars -except Database_Files F i List
         i=i+1;
-        
+        end  
     end
 end
 
 % saving the Database file in the directory for consequent analysis
 save Database_File Database_Files
+
