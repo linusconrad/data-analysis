@@ -1,4 +1,5 @@
-# this script fits an bi-exponential function to timecourses
+# this script fits an bi-exponential function to timecourses of
+# a voltage step protocols with a deactivating prepulse
 
 expfit.tail =
   function(txt, npersweep, sep, cond){

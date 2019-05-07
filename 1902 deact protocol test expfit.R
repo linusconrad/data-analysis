@@ -1,4 +1,5 @@
-# this script fits an exponential function to timecourses of the 
+# this script fits an exponential function to timecourses of a
+# voltage step protocol with an activating prepulse
 
 expfit.deacttest =
   function(txt, npersweep, sep, cond){
