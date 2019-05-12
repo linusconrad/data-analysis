@@ -87,21 +87,21 @@ read.mat.WinWCP =
 
 # this is for a .mat file written by Matlab with the script of Manuel
 read.mat.Matlab =
-  function(file){
+  function(file, SR, nsweep){
     raw.mat =
       readMat(file)
     
-    # number of rows in each sweep
-    n.per.sweep = raw.mat$File[1] %>% unlist(.) %>% length()
     # total number of rows of the file at the end
     nrows = raw.mat$File[2] %>%  unlist(.) %>% length(.)
-    # number of sweeps
-    nsweep = nrows / n.per.sweep
+    # number of sample in a sweep
+    n.per.sweep = nrows / nsweep
+    # time of one sweep (s)
+    tend = nrows/ SR / nsweep
     
     tibble.tIV =
       tibble(
         # time in sec
-        t = c(rep.int(raw.mat$File[1] %>% unlist, times = nsweep)) / 1000,
+        t = c(rep.int(seq(from = 0, to = tend, length.out = n.per.sweep), nsweep)),
         V = raw.mat$File[2] %>%  unlist(.),
         I = raw.mat$File[3] %>%  unlist(.),
         # assign sweep
@@ -110,3 +110,6 @@ read.mat.Matlab =
     # join the meta and return data
     addmeta(tibble.tIV, metadata = c(file), cond = c("filename"))
   }
+
+
+
