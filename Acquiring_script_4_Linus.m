@@ -49,7 +49,7 @@ for F = 1:numel(List)
         clc;
         
         [Database_Files.(tempName).traces, Database_Files.(tempName).si, Database_Files.(tempName).h] = abfload(fullfile(the_file), 'start', 0, 'stop', 'e');
-        Database_Files.(tempName).Time = (0:(Database_Files.(tempName).si/1000):((Database_Files.(tempName).h.sweepLengthInPts-1)/10))';
+        Database_Files.(tempName).Time = (0:(Database_Files.(tempName).si/1000):((Database_Files.(tempName).h.sweepLengthInPts-1)*(Database_Files.(tempName).si/1000)))';
         
         Database_Files.(tempName).Voltages = squeeze ((Database_Files.(tempName).traces(:,2,1:end)));
         Database_Files.(tempName).Currents = squeeze ((Database_Files.(tempName).traces(:,1,1:end)));
@@ -60,15 +60,41 @@ for F = 1:numel(List)
         field = 'traces';
         Database_Files.(tempName) = rmfield(Database_Files.(tempName),field);
         
-        % in these lines I'm deleting all the variables and saving all the analysed data by file
+        % in these lines I'm deleting all the variables and saving all the 
+        % analysed data by file
         
         File_Name = char(sprintf('%s.mat',Database_Files.(tempName).name (1:end-4)));
-        field = {'bytes','isdir','datenum','h','si','name','folder','date'};
-        Database_Files.(tempName) = rmfield(Database_Files.(tempName),field);
-        File = Database_Files.(tempName);
+        field = {'bytes','isdir','datenum','h','si'};
+        Database_Files.(tempName) = rmfield(Database_Files.(tempName),field);        
+        j=1;
+        
+        %------------- from here, to the end of this cycle ---------------%
+        % All the informations are stored in a cell array and in each 
+        % columns there will be a different type of data( 1=Time,
+        % 2=Currents, 3=Voltages, 4=sweep number, 5=file name, 6=folder tag
+        
+        for y=1:size(Database_Files.(tempName).Currents,2)
+            Database_Files.(tempName).CompatibleSheet (j:j+(size(Database_Files.(tempName).Currents,1)-1),1) =  Database_Files.(tempName).Time(:,1);
+            Database_Files.(tempName).CompatibleSheet (j:j+(size(Database_Files.(tempName).Currents,1)-1),4) = y;
+            j = j+size(Database_Files.(tempName).Currents,1);
+        end
+            
+        Database_Files.(tempName).CompatibleSheet (:,2) = reshape(Database_Files.(tempName).Currents,[],1);
+        Database_Files.(tempName).CompatibleSheet (:,3) = reshape(Database_Files.(tempName).Voltages,[],1);
+        
+        Database_Files.(tempName).CompatibleSheet = num2cell(Database_Files.(tempName).CompatibleSheet);
+        
+        for y=1:numel(Database_Files.(tempName).Currents)
+            Database_Files.(tempName).CompatibleSheet {y,5} =  Database_Files.(tempName).name;
+            Database_Files.(tempName).CompatibleSheet {y,6} = Database_Files.(tempName).folder;
+        end
+        
+        %-----------------------------------------------------------------%
+        
+        File = Database_Files.(tempName).CompatibleSheet;
         save (File_Name, 'File');
         close all;
-        clearvars -except Database_Files F i List
+        clearvars -except Database_Files F i List File
         i=i+1;
         end  
     end
