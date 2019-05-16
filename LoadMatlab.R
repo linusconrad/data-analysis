@@ -100,7 +100,7 @@ read.mat.Matlab =
     tibble.tIV =
       tibble(
         # time in sec
-        t = c(rep.int(raw.mat$File[1] %>%  unlist(.), times = nsweep)),
+        t = c(rep.int(raw.mat$File[1] %>%  unlist(.), times = nsweep))/1000,
         V = raw.mat$File[2] %>%  unlist(.),
         I = raw.mat$File[3] %>%  unlist(.),
         # assign sweep
@@ -111,4 +111,4 @@ read.mat.Matlab =
   }
 
 
-read.mat.Matlab("190502 cellD Trek2bFL 2K_0005.mat")
+#read.mat.Matlab("190502 cellD Trek2bFL 2K_0005.mat")
