@@ -51,10 +51,12 @@ addmeta = function(df, metadata, cond){
 
 # function to load from WinWCP
 read.mat.WinWCP = 
-  function(file, nsweep){
+  function(file){
     raw.mat = 
       readMat(file) %>%
       unname(.)
+    
+   nsweep = length(raw.mat) /2
     
     # this wrangles the data into tidy shape
     tibble.raw =
